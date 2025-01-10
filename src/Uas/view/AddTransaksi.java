@@ -4,15 +4,20 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import Uas.model.classes.Transaction;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class AddTransaksi extends JFrame{
     private JLabel name, alamat, phone, berat, typeLabel;
     private JTextField nameField, alamatField, phoneField, beratField;
-    private JComboBox type;
+    private JComboBox<String> type;
     private JButton back, simpan;
     private JPanel mainPanel, inputJPanel;
 
@@ -68,7 +73,7 @@ public class AddTransaksi extends JFrame{
 
         String typePengiriman[] = { "Building Materials" ,"House Moving","Instant Delivery"};
 
-        type = new JComboBox(typePengiriman);
+        type = new JComboBox<>(typePengiriman);
 
         inputJPanel = new JPanel(new GridLayout(8,2,30,30));
         inputJPanel.setOpaque(false);
@@ -86,7 +91,40 @@ public class AddTransaksi extends JFrame{
         inputJPanel.add(simpan);
         inputJPanel.add(back);
 
-        
+
+        simpan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+
+                if (nameField.getText().trim().isEmpty() || alamatField.getText().trim().isEmpty() || phoneField.getText().trim().isEmpty() || beratField.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Mohon diisi semua");
+                    
+                }else{
+                    if (beratField.getText().equalsIgnoreCase("0")) {
+                        JOptionPane.showMessageDialog(null, "Mohon isi selain angka 0");
+                    }else{
+                        boolean transaction = Transaction.AddTransaksi(nameField.getText(), alamatField.getText(), phoneField.getText(), beratField.getText(), (String)type.getSelectedItem());
+                        if (transaction) {
+                             JOptionPane.showMessageDialog(null, "Berhasil ditambah");
+                             new Trasaksi();
+                             dispose();
+                        }else{
+                             JOptionPane.showMessageDialog(null, "Gagal ditambah");
+                        }
+                    }
+                }
+            }
+
+        });
+
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+               new Trasaksi();
+               dispose();
+            }
+
+        });
 
         mainPanel.add(inputJPanel);
 

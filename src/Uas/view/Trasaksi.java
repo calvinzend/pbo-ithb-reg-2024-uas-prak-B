@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 
 
 public class Trasaksi extends JFrame{
-    private JButton addTrasaksi, addDetail;
+    private JButton addTrasaksi, addDetail, back;
     private JPanel mainPanel;
 
 
@@ -32,15 +32,36 @@ public class Trasaksi extends JFrame{
         addTrasaksi = new JButton("add Transaksi");
         addTrasaksi.setFont(new Font("Arial", Font.BOLD, 24));
 
+        back = new JButton("back");
+        back.setFont(new Font("Arial", Font.BOLD, 24));
+
+        mainPanel.add(addTrasaksi);
+        mainPanel.add(new Label());
         mainPanel.add(addDetail);
         mainPanel.add(new Label());
-        mainPanel.add(addTrasaksi);
+        mainPanel.add(back);
 
 
          addTrasaksi.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
                new AddTransaksi();
+               dispose();
+            }
+
+        });
+         addDetail.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+               new AddDetail();
+               dispose();
+            }
+
+        });
+         back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+               new MenuUtama();
                dispose();
             }
 

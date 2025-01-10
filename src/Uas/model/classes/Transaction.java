@@ -1,9 +1,12 @@
 package Uas.model.classes;
 
+import java.security.Timestamp;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Transaction {
     private int id;
@@ -15,6 +18,8 @@ public class Transaction {
     private String receipt_name;
     private String receipt_address;
     private String receipt_phone;
+
+    public Transaction(){}
     
     public Transaction(int id, int customer_id, String delivery_type, int expected_weight, int total_cost,
             Date created_at, String receipt_name, String receipt_address, String receipt_phone) {
@@ -84,20 +89,22 @@ public class Transaction {
     }
 
     public static boolean AddTransaksi(String name, String alamat, String phone, String berat, String type) {
-        String query = "INSERT INTO `transaction`(`id`, `customer_id`, `delivery_type`, `expected_weight`, `total_cost`, `created_at`, `receipt_name`, `receipt_address`, `receipt_phone`)) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO `transaction`(`id`, `customer_id`, `delivery_type`, `expected_weight`, `total_cost`, `created_at`, `receipt_name`, `receipt_address`, `receipt_phone`) " +
+               "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 
         try (Connection con = ConnectionManager.getConnection();
              PreparedStatement st = con.prepareStatement(query)) {
             Customer user = SingletonManager.getInstance().getCustomer();
 
-            LocalDateTime now = LocalDateTime.now();  
+            int cost = getCost(type) * Integer.parseInt(berat); 
+            LocalDateTime now = LocalDateTime.now();
             st.setInt(1, 0);
             st.setInt(2, user.getId());
             st.setString(3, type);
             st.setInt(4, Integer.parseInt(berat));
-            st.setString(5, null);
-            st.setDate(6, null);
+            st.setInt(5, cost);
+            st.setDate(6, java.sql.Date.valueOf(now.toLocalDate()));
             st.setString(7, name);    
             st.setString(8, alamat);    
             st.setString(9, phone);    
@@ -111,6 +118,53 @@ public class Transaction {
             return false;
         }
     }
+
+     public static int getCost(String type){
+        String query = "SELECT * FROM cost WHERE type = ? ";
+
+        try (Connection con = ConnectionManager.getConnection();
+            PreparedStatement st = con.prepareStatement(query)) {
+
+            st.setString(1, type);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("fee");
+                }
+            }
+        }catch (Exception ex) {
+            System.out.println("Terjadi kesalahan: " + ex.getMessage());
+            return 0;
+        }
+        return 0;
+    } 
+
+     public static ArrayList<Transaction> getData(){
+        String query = "SELECT * FROM transaction order by created_at DESC";
+        ArrayList<Transaction> transactions =  new ArrayList<>();
+
+        try (Connection con = ConnectionManager.getConnection();
+            PreparedStatement st = con.prepareStatement(query)) {
+
+            try (ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                    Transaction transaction = new Transaction();
+                    transaction.setId(rs.getInt("id"));
+                    transaction.setCustomer_id(rs.getInt("customer_id"));
+                    transaction.setDelivery_type(rs.getString("delivery_type"));
+                    transaction.setExpected_weight(rs.getInt("expected_weight"));
+                    transaction.setTotal_cost(rs.getInt("total_cost"));
+                    transaction.setCreated_at(new Date(rs.getTimestamp("created_at").getTime()));
+
+                transactions.add(transaction);
+                }
+            }
+        }catch (Exception ex) {
+            System.out.println("Terjadi kesalahan: " + ex.getMessage());
+        }
+        return transactions;
+    } 
+
+    
 
 
 }

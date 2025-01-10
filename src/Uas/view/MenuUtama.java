@@ -30,7 +30,7 @@ public class MenuUtama extends JFrame{
         login.setFont(new Font("Arial", Font.BOLD, 24));
         register = new JButton("Register");
         register.setFont(new Font("Arial", Font.BOLD, 24));
-        trasaksiPengiriman = new JButton("Trasaksi Pengiriman");
+        trasaksiPengiriman = new JButton("Transaksi Pengiriman");
         trasaksiPengiriman.setFont(new Font("Arial", Font.BOLD, 24));
         history = new JButton("History");
         history.setFont(new Font("Arial", Font.BOLD, 24));
@@ -74,7 +74,7 @@ public class MenuUtama extends JFrame{
         history.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                new Login();
+                new HistoryTransaksi();
                 dispose();
             }
 
